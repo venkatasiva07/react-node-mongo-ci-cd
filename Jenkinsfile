@@ -62,7 +62,7 @@ pipeline {
                     sh '''
                         chmod 600 $SSH_KEY
 
-                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$EC2_IP << EOF
+                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$EC2_IP << 'EOF'
 
                         docker pull ${BACKEND_IMAGE}
                         docker pull ${FRONTEND_IMAGE}
