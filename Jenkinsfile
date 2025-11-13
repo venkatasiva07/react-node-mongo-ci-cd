@@ -2,10 +2,10 @@ pipeline {
   agent any
 
   environment {
-    DOCKERHUB_USER = "YOUR_DOCKERHUB_USERNAME"
+    DOCKERHUB_USER = "venkatasivareddybhavanam834"
     BACKEND_IMAGE = "${DOCKERHUB_USER}/simple-backend"
     FRONTEND_IMAGE = "${DOCKERHUB_USER}/simple-frontend"
-    EC2_IP = "YOUR_EC2_PUBLIC_IP"
+    EC2_IP = "54.90.201.141"
   }
 
   triggers {
@@ -47,10 +47,10 @@ pipeline {
   agent any
 
   environment {
-    DOCKERHUB_USER = "YOUR_DOCKER_HUB_USERNAME"
+    DOCKERHUB_USER = "venkatasivareddybhavanam834"
     BACKEND_IMAGE = "${DOCKERHUB_USER}/simple-backend"
     FRONTEND_IMAGE = "${DOCKERHUB_USER}/simple-frontend"
-    EC2_IP = "YOUR_EC2_PUBLIC_IP"
+    EC2_IP = "54.90.201.141"
   }
 
   triggers {
