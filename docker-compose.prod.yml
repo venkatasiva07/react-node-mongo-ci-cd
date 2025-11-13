@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      - mongo_prod:/data/db
+
+  backend:
+    image: DOCKERHUB_USER/simple-backend:latest
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/simpledb
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  frontend:
+    image: DOCKERHUB_USER/simple-frontend:latest
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+volumes:
+  mongo_prod:
