@@ -22,13 +22,13 @@ pipeline {
 
         stage('Build Backend Image') {
             steps {
-                sh "docker build -t $BACKEND_IMAGE ./backend"
+                sh "docker build -t ${BACKEND_IMAGE}:latest ./backend"
             }
         }
 
         stage('Build Frontend Image') {
             steps {
-                sh "docker build -t $FRONTEND_IMAGE ./frontend"
+                sh "docker build -t ${FRONTEND_IMAGE}:latest ./frontend"
             }
         }
 
@@ -39,15 +39,15 @@ pipeline {
                     usernameVariable: 'DH_USER',
                     passwordVariable: 'DH_PASS'
                 )]) {
-                    sh 'echo $DH_PASS | docker login -u $DH_USER --password-stdin'
+                    sh "echo $DH_PASS | docker login -u $DH_USER --password-stdin"
                 }
             }
         }
 
         stage('Push Images') {
             steps {
-                sh "docker push $BACKEND_IMAGE"
-                sh "docker push $FRONTEND_IMAGE"
+                sh "docker push ${BACKEND_IMAGE}:latest"
+                sh "docker push ${FRONTEND_IMAGE}:latest"
             }
         }
 
@@ -59,31 +59,38 @@ pipeline {
                     usernameVariable: 'SSH_USER'
                 )]) {
 
-                    sh '''
-                        chmod 600 $SSH_KEY
+                    sh """
+chmod 600 $SSH_KEY
 
-                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$EC2_IP << 'EOF'
+ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$EC2_IP << EOF
 
-                        docker pull ${BACKEND_IMAGE}
-                        docker pull ${FRONTEND_IMAGE}
+echo "Pulling latest images..."
+docker pull ${BACKEND_IMAGE}:latest
+docker pull ${FRONTEND_IMAGE}:latest
 
-                        docker rm -f backend frontend mongo || true
+echo "Stopping existing containers..."
+docker rm -f backend frontend mongo || true
 
-                        docker network create app-network || true
+echo "Creating Docker network..."
+docker network create app-network || true
 
-                        docker run -d --name mongo --network app-network mongo
+echo "Starting MongoDB..."
+docker run -d --name mongo --network app-network mongo
 
-                        docker run -d --name backend --network app-network \
-                          -p 5000:5000 \
-                          -e MONGO_URI=mongodb://mongo:27017/mydb \
-                          ${BACKEND_IMAGE}
+echo "Starting Backend..."
+docker run -d --name backend --network app-network \
+  -p 5000:5000 \
+  -e MONGO_URI=mongodb://mongo:27017/mydb \
+  ${BACKEND_IMAGE}:latest
 
-                        docker run -d --name frontend --network app-network \
-                          -p 80:80 \
-                          ${FRONTEND_IMAGE}
+echo "Starting Frontend..."
+docker run -d --name frontend --network app-network \
+  -p 80:80 \
+  ${FRONTEND_IMAGE}:latest
 
-                        EOF
-                    '''
+echo "Deployment complete."
+EOF
+"""
                 }
             }
         }
