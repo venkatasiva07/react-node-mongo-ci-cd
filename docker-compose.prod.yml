@@ -7,7 +7,7 @@ services:
       - mongo_prod:/data/db
 
   backend:
-    image: DOCKERHUB_USER/simple-backend:latest
+    image: venkatasivareddybhavanam834/simple-backend:latest
     environment:
       - MONGO_URI=mongodb://mongo:27017/simpledb
     depends_on:
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: DOCKERHUB_USER/simple-frontend:latest
+    image: venkatasivareddybhavanam834/simple-frontend:latest
     depends_on:
       - backend
     ports:
